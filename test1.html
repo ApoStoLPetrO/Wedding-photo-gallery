@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Весілля Каляна і Свєти</title>
+    <!-- Підключення Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Конфігурація Tailwind для використання фірмового шрифту та кольорів --><script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ios-blue': '#ff007f', // Акцентний рожево-фіолетовий
+                        'ios-pink': '#FF3B5C', // Акцентний рожевий
+                        'surface-light': '#F8F9FA',
+                        'surface-dark': '#E9ECEF',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Стилі для чистого, сучасного вигляду та плавної прокрутки */
+        body {
+            background-color: #F0F2F5; 
+            color: #1F2937;
+            font-family: 'Inter', 'sans-serif';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-osx-smoothing: grayscale;
+
+            /* ===== СТИЛІ ДЛЯ ФОНОВОГО ЗОБРАЖЕННЯ (ПАРАЛАКС НА ДЕСКТОПІ) ===== */
+            background-image: url('https://i.postimg.cc/RhqfGHzR/foto-0211.jpg'); 
+            background-repeat: no-repeat;
+            
+            /* Забезпечує повне покриття та обрізання, якщо потрібно */
+            background-size: cover; 
+            /* Фіксоване прикріплення для ефекту паралаксу на великих екранах */
+            background-attachment: fixed;
+            
+            /* Початкова позиція в центрі для десктопу (для паралаксу) */
+            background-position: center center; 
+            transition: background-position 0.5s ease-out, background-image 0.5s ease-out; 
+        }
+        
+        /* --- НОВИЙ БЛОК ДЛЯ МОБІЛЬНИХ (768px і менше) --- */
+        @media (max-width: 768px) {
+            body {
+                /* ВИПРАВЛЕННЯ: Дозволяємо фону прокручуватися разом з контентом для плавності */
+                background-attachment: scroll !important; 
+                
+                /* ========================================================= */
+                /* ОНОВЛЕНО: Тепер фон заповнює висоту, обрізаючись по ширині */
+                background-size: cover !important; /* залишаємо cover, щоб висота завжди була покрита */
+                background-position: center center !important; /* центр по обох осях */
+                /* ========================================================= */
+            }
+        }
+
+        /* Основний контейнер контенту (більш прозорий) */
+        .container {
+            background-color: rgba(255, 255, 255, 0.35); 
+            border-radius: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            position: relative; 
+            z-index: 1;
+        }
+
+        /* Стилі для плавних переходів при наведенні на фото/категорію */
+        .photo-item, .category-card-wrapper { 
+            cursor: pointer;
+            border-radius: 1rem;
+            overflow: hidden;
+            position: relative;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            perspective: 1000px;
+        }
+        
+        .category-card {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06); 
+            border: 2px solid transparent; 
+            border-radius: 1rem;
+            transition: 
+                transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.4s ease-in-out, 
+                border 0.4s ease-in-out; 
+        }
+
+        .category-card-wrapper:hover .category-card {
+            transform: translateY(-8px) translateZ(30px); 
+            box-shadow: 
+                0 10px 30px rgba(255, 59, 92, 0.5), 
+                0 20px 45px rgba(0, 0, 0, 0.3);       
+            border: 2px solid #ff007f; 
+        }
+
+        .category-card img {
+            transition: transform 0.35s ease-in-out, filter 0.35s ease-in-out, opacity 0.35s ease-in-out; 
+            filter: brightness(1.05); 
+        }
+
+        .category-card-wrapper:hover img {
+            transform: scale(1.05); 
+            filter: brightness(1.15); 
+        }
+        
+        .photo-item {
+            transition: 
+                transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                opacity 0.8s ease-out, 
+                box-shadow 0.3s ease-in-out, 
+                border 0.3s ease-in-out; 
+            border: 2px solid transparent; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+
+        .photo-item:hover {
+            transform: translateY(-2px) scale(1.02); 
+            box-shadow: 
+                0 0 15px rgba(255, 59, 92, 0.5), 
+                0 0 30px rgba(255, 0, 127, 0.4), 
+                0 10px 20px rgba(0, 0, 0, 0.3); 
+            border: 2px solid #ff007f; 
+        }
+        
+        /* Стилі для модального вікна (Lightbox) */
+        .modal-overlay {
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.7);
+            transition: opacity 0.3s ease-in-out;
+            z-index: 50;
+        }
+
+        /* Анімація для кнопок в стилі iOS */
+        .ios-button {
+            transition: all 0.1s ease-out;
+        }
+        .ios-button:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        
+        /* Стиль для плавного переходу основного контенту та заголовків */
+        .content-transition {
+            transition: opacity 0.3s ease-in-out; 
+        }
+
+        /* ===== КРЕАТИВНІ СТИЛІ ДЛЯ ЗАГОЛОВКА (без завиток) ===== */
+        .fancy-title {
+            text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1), 
+                         0 0 20px rgba(255, 59, 92, 0.6); 
+            letter-spacing: 0.05em; 
+            line-height: 1.1;
+        }
+
+        /* Анімація для іконки серця */
+        .fancy-heart-icon {
+            animation: pulse-grow 3s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        @keyframes pulse-grow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 10px #FF3B5C); }
+        }
+
+        /* Стилі для компактної кнопки "Назад" */
+        .back-button-container {
+            position: relative; 
+        }
+        .back-button-fixed {
+            position: absolute;
+            top: 10px; 
+            left: 10px; 
+            width: 44px; 
+            height: 44px;
+            padding: 0; 
+            justify-content: center;
+            align-items: center;
+            z-index: 20; 
+            opacity: 0.8; 
+            transition: opacity 0.3s ease-in-out, transform 0.1s ease-out; 
+        }
+        
+        .back-button-fixed:hover {
+            opacity: 1.0; 
+        }
+        /* Стилі для голубів */
+        .pigeon-icon {
+            fill: white; 
+            stroke: #6B7280; 
+            stroke-width: 1px; 
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); 
+        }
+
+        /* ===== НОВІ СТИЛІ ДЛЯ ВІДЕО ===== */
+        .play-icon-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            pointer-events: none; /* Щоб клік проходив крізь іконку на фото */
+            z-index: 10;
+        }
+        
+        .photo-item:hover .play-icon-overlay {
+            transform: translate(-50%, -50%) scale(1.2);
+            background-color: rgba(255, 59, 92, 0.8);
+        }
+
+        /* Приховуємо відео плеєр за замовчуванням */
+        #modal-video, #youtube-player {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Головний контейнер із м'якими відступами --><div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 my-8">
+        
+        <!-- Секція заголовку --><header class="text-center mb-12 p-8 rounded-3xl shadow-2xl border-b-4 border-ios-pink content-transition bg-gradient-to-br from-white to-surface-dark/50 back-button-container" id="main-header">
+            
+            <!-- Кнопка "Назад" (залишається у верхньому лівому куті) --><button id="back-to-categories-btn" onclick="handleBackClick()" 
+                class="ios-button hidden back-button-fixed p-3 bg-ios-blue text-white rounded-full flex items-center shadow-lg hover:shadow-xl transition-all duration-300" 
+                aria-label="Назад до категорій">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            </button>
+
+            <!-- Іконка (Серце та Голуби) --><div class="relative flex justify-center items-center gap-4 mb-3 h-20">
+                <!-- Голуб зліва (дивиться вправо) --><svg class="w-10 h-10 pigeon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.39.106-.803.163-1.227.163-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"/>
+                </svg>
+
+                <!-- Іконка (Серце) - центральний елемент --><div class="relative inline-block w-20 h-20"> <!-- Зберігаємо w-20 h-20 для серця --><svg class="absolute inset-0 w-full h-full text-ios-pink fancy-heart-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center text-white font-extrabold text-xl leading-none">
+                        К+С
+                    </div>
+                </div>
+
+                <!-- Голуб зправа (дивиться вліво) - transform: scaleX(-1) --><svg class="w-10 h-10 pigeon-icon transform scale-x-[-1]" viewBox="0 0 24 24" xmlns="http://www.w3.org/24/2000/svg">
+                    <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.39.106-.803.163-1.227.163-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"/>
+                </svg>
+            </div>
+            
+            <!-- Заголовок --><h1 class="text-4xl sm:text-6xl font-extrabold text-ios-blue mb-2 fancy-title content-transition" id="main-title">
+                Весілля Каляна і Свєти
+            </h1>
+            
+            <!-- Підзаголовок --><p class="text-xl sm:text-2xl text-gray-700 font-semibold italic content-transition" id="main-subtitle">
+                Пориньте у світ наших весільних спогадів.
+            </p>
+        </header>
+
+        <!-- Головна область контенту: тут буде сітка категорій АБО сітка фото --><main class="grid gap-4 sm:gap-6 content-transition" id="content-grid">
+            <h2 class="col-span-full text-center text-gray-500 py-10" id="loading-text">
+                Завантаження категорій...
+            </h2>
+        </main>
+
+        <!-- Футер --><footer class="text-center mt-16 pt-8 border-t border-gray-300 text-gray-500">
+            <p class="text-sm">&copy; 2025 Kalyan & Sveta. З любов'ю.</p>
+        </footer>
+    </div>
+
+    <!-- Модальне вікно (Lightbox) для перегляду ОДНОГО фото --><div id="photo-modal" class="hidden fixed inset-0 modal-overlay flex justify-center items-center p-4" onclick="closeModal(event)">
+        
+        <!-- Контейнер модального вікна --><div class="relative w-full h-full max-w-6xl max-h-[90vh] flex justify-center items-center" onclick="event.stopPropagation()">
+            
+            <!-- Кнопка закриття --><button onclick="closeModal()" class="ios-button absolute top-4 right-4 p-3 bg-white/20 hover:bg-white/40 text-white rounded-full transition-all backdrop-blur-md z-50" title="Закрити">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <!-- Зображення --><img id="modal-image" src="" alt="Переглянути фото" class="object-contain max-w-full max-h-full rounded-2xl shadow-2xl transition-opacity duration-300 opacity-0">
+
+            <!-- НОВЕ: YouTube плеєр --><iframe id="youtube-player" class="w-full h-full max-h-[80vh] aspect-video rounded-2xl shadow-2xl hidden" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+            <!-- Кнопки навігації (тепер з контролем видимості та активності) --><button id="prev-btn" onclick="navigatePhoto(-1)" class="ios-button absolute left-2 sm:left-6 top-1/2 transform -translate-y-1/2 p-3 sm:p-4 bg-white/20 hover:bg-white/40 text-white rounded-full transition-all backdrop-blur-md opacity-70 hover:opacity-100 disabled:opacity-30 disabled:pointer-events-none z-40" title="Попереднє фото">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <button id="next-btn" onclick="navigatePhoto(1)" class="ios-button absolute right-2 sm:right-6 top-1/2 transform -translate-y-1/2 p-3 sm:p-4 bg-white/20 hover:bg-white/40 text-white rounded-full transition-all backdrop-blur-md opacity-70 hover:opacity-100 disabled:opacity-30 disabled:pointer-events-none z-40" title="Наступне фото">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
+            <!-- СЕКЦІЯ: Кнопка завантаження --><div id="download-container" class="absolute bottom-4 left-0 right-0 flex justify-center p-2 z-20">
+                <button id="download-btn" onclick="downloadPhoto()" class="ios-button px-6 py-2 bg-ios-blue text-white rounded-full text-base font-semibold shadow-xl hover:bg-ios-pink/90 transition-all duration-300 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Завантажити фото</span>
+                </button>
+            </div>
+            <!-- КІНЕЦЬ СЕКЦІЇ --></div>
+    </div>
+
+    <script>
+        // Ініціалізація змінних
+        const contentGrid = document.getElementById('content-grid');
+        const modal = document.getElementById('photo-modal');
+        const modalImage = document.getElementById('modal-image');
+        const youtubePlayer = document.getElementById('youtube-player'); // НОВЕ: YouTube
+        const loadingText = document.getElementById('loading-text');
+        const backBtn = document.getElementById('back-to-categories-btn');
+        const mainTitle = document.getElementById('main-title');
+        const mainSubtitle = document.getElementById('main-subtitle');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn'); 
+        const downloadBtn = document.getElementById('download-btn'); 
+
+        // ФІКСОВАНИЙ ТЕКСТ ДЛЯ ПІДЗАГОЛОВКА
+        const fixedSubtitleText = "Пориньте у світ наших весільних спогадів.";
+
+        let currentCategoryPhotos = []; // Масив фотографій поточної категорії
+        let currentImageIndex = -1;
+        let currentPhotoUrl = ''; 
+        
+        // ====================================================================================
+        // ЗМІННІ ДЛЯ ФОНУ
+        // ====================================================================================
+        // Фон більше не вимагає JS для адаптивності, але функція parallax залишається для десктопу
+        
+        /**
+         * Перевіряє, чи пристрій є мобільним (для відключення паралаксу).
+         */
+        function isMobileDevice() {
+            // Використовуємо більш надійну перевірку для тач-пристроїв
+            return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+        };
+        
+        // ====================================================================================
+        // ДАНІ КАТЕГОРІЙ (Оновлені категорії: Кільця, Традиції і танці)
+        // ====================================================================================
+        const categories = [
+            {
+                name: "Калян і Свєта",
+                id: "couple",
+                coverImage: "https://i.postimg.cc/3wXfgP83/foto-0197.jpg", 
+                hoverImage: "https://i.postimg.cc/LsCdYJm6/foto-0199.jpg", 
+                bodyBgImage: "https://i.postimg.cc/HssgG7sS/foto-0200.jpg", 
+                photos: [
+                    { src: "https://i.postimg.cc/KYKm0BGf/foto_0184.jpg", alt: "Весільна Пара 1" },
+                    { src: "https://i.postimg.cc/VkZY9D89/foto_0186.jpg", alt: "Весільна Пара 2" },
+                    { src: "https://i.postimg.cc/mgpb38s9/foto_0187.jpg", alt: "Весільна Пара 3" },
+                    { src: "https://i.postimg.cc/GmgcPqCH/foto_0188.jpg", alt: "Весільна Пара 4" },
+                    { src: "https://i.postimg.cc/tg19BWq2/foto_0181.jpg", alt: "Весільна Пара 5" },
+                    { src: "https://i.postimg.cc/XY1VKQbz/foto_0183.jpg", alt: "Весільна Пара 6" },
+                    { src: "https://i.postimg.cc/FHHrJw2N/foto_0189.jpg", alt: "Весільна Пара 7" },
+                    { src: "https://i.postimg.cc/wTVxM94F/foto_0196.jpg", alt: "Весільна Пара 8" },
+                    { src: "https://i.postimg.cc/Wbjbsd8n/foto_0197.jpg", alt: "Весільна Пара 9" },
+                    { src: "https://i.postimg.cc/rFcFqDjC/foto_0198.jpg", alt: "Весільна Пара 10" },
+                    { src: "https://i.postimg.cc/dtvtJh6L/foto_0199.jpg", alt: "Весільна Пара 11" },
+                    { src: "https://i.postimg.cc/mk3LQ4Lg/foto_0205.jpg", alt: "Весільна Пара 12" },
+                    { src: "https://i.postimg.cc/J03rb8r7/foto_0206.jpg", alt: "Весільна Пара 13" },
+                    { src: "https://i.postimg.cc/kGNJxCJq/foto_0207.jpg", alt: "Весільна Пара 14" },
+                    { src: "https://i.postimg.cc/Rh1ScmSB/foto_0208.jpg", alt: "Весільна Пара 15" },
+                    { src: "https://i.postimg.cc/d3Rs8FsP/foto_0209.jpg", alt: "Весільна Пара 16" },
+                    { src: "https://i.postimg.cc/WzcpFzvT/foto_0223.jpg", alt: "Весільна Пара 17" },
+                    { src: "https://i.postimg.cc/wMYxyMp6/foto_0224.jpg", alt: "Весільна Пара 18" },
+                    { src: "https://i.postimg.cc/tg19BWRy/foto_0093.jpg", alt: "Весільна Пара 19" },
+                    { src: "https://i.postimg.cc/9f4cLZX5/foto_0094.jpg", alt: "Весільна Пара 20" },
+                    { src: "https://i.postimg.cc/s2B3T7fr/foto_0096.jpg", alt: "Весільна Пара 21" },
+                    { src: "https://i.postimg.cc/JhyRpZrv/foto_0098.jpg", alt: "Весільна Пара 22" },
+                    { src: "https://i.postimg.cc/8CFTZMpX/foto_0099.jpg", alt: "Весільна Пара 23" },
+                    { src: "https://i.postimg.cc/JhyRpZrp/foto_0100.jpg", alt: "Весільна Пара 24" },
+                    { src: "https://i.postimg.cc/057ygYYN/foto_0200.jpg", alt: "Весільна Пара 25" },
+                    { src: "https://i.postimg.cc/Y2QCc66H/foto_0201.jpg", alt: "Весільна Пара 26" },
+                    { src: "https://i.postimg.cc/CMbxyGjX/foto_0202.jpg", alt: "Весільна Пара 27" },
+                    { src: "https://i.postimg.cc/057ygYpB/foto_0203.jpg", alt: "Весільна Пара 28" },
+                    { src: "https://i.postimg.cc/tJdqhbq6/foto_0204.jpg", alt: "Весільна Пара 29" },
+                    { src: "https://i.postimg.cc/NjCg8pcH/foto_0190.jpg", alt: "Весільна Пара 30" },
+                    { src: "https://i.postimg.cc/g22z61f2/foto_0191.jpg", alt: "Весільна Пара 31" },
+                    { src: "https://i.postimg.cc/T33dWBZv/foto_0193.jpg", alt: "Весільна Пара 32" },
+                    { src: "https://i.postimg.cc/vHz8TGSM/foto_0194.jpg", alt: "Весільна Пара 33" },
+                    { src: "https://i.postimg.cc/X78Nqn1w/foto_0195.jpg", alt: "Весільна Пара 34" },
+                    { src: "https://i.postimg.cc/Gtn38tCb/foto_0217.jpg", alt: "Весільна Пара 35" },
+                    { src: "https://i.postimg.cc/1X1RnXQP/foto_0220.jpg", alt: "Весільна Пара 36" },
+                ]
+            },
+            {
+                name: "Красіві падружки",
+                id: "friends",
+                coverImage: "https://i.postimg.cc/pr2ZYT0C/foto-0074.jpg",
+                hoverImage: "https://i.postimg.cc/4d9c7hpt/foto-0076.jpg", 
+                bodyBgImage: "https://picsum.photos/id/1015/1200/800",
+                photos:  [
+                    { src: "https://i.postimg.cc/DfC6xk8Z/foto_0088.jpg", alt: "Фото з подружками 1" },
+                    { src: "https://i.postimg.cc/7PB9K8fT/foto_0089.jpg", alt: "Фото з подружками 2" },
+                    { src: "https://i.postimg.cc/c4rmj9nz/foto_0090.jpg", alt: "Фото з подружками 3" },
+                    { src: "https://i.postimg.cc/pXpZ7GF8/foto_0091.jpg", alt: "Фото з подружками 4" },
+                    { src: "https://i.postimg.cc/yYkP5QZM/foto_0092.jpg", alt: "Фото з подружками 5" },
+                    { src: "https://i.postimg.cc/vTmzGXSF/foto_0087.jpg", alt: "Фото з подружками 6" },
+                    { src: "https://i.postimg.cc/sx0JxStv/foto_0086.jpg", alt: "Фото з подружками 7" },
+                    { src: "https://i.postimg.cc/gj0DG4B9/foto_0085.jpg", alt: "Фото з подружками 8" },
+                    { src: "https://i.postimg.cc/rmjj67jn/foto_0084.jpg", alt: "Фото з подружками 9" },
+                    { src: "https://i.postimg.cc/50ggcDg3/foto_0083.jpg", alt: "Фото з подружками 10" },
+                    { src: "https://i.postimg.cc/76w9Wq3g/foto_0082.jpg", alt: "Фото з подружками 11" },
+                    { src: "https://i.postimg.cc/02FfqYYL/foto_0128.jpg", alt: "Фото з подружками 12" },
+                    { src: "https://i.postimg.cc/m2JwGY3b/foto_0129.jpg", alt: "Фото з подружками 13" },
+                    { src: "https://i.postimg.cc/P5DMfCK8/foto_0130.jpg", alt: "Фото з подружками 14" },
+                    { src: "https://i.postimg.cc/g2hKcx4K/foto_0131.jpg", alt: "Фото з подружками 15" },
+                    { src: "https://i.postimg.cc/bJpgBqxb/foto_0081.jpg", alt: "Фото з подружками 16" },
+                    { src: "https://i.postimg.cc/76w9Wq3S/foto_0080.jpg", alt: "Фото з подружками 17" },
+                    { src: "https://i.postimg.cc/sXsmN3YB/foto_0079.jpg", alt: "Фото з подружками 18" },
+                    { src: "https://i.postimg.cc/GpkzK4yT/foto_0078.jpg", alt: "Фото з подружками 19" },
+                    { src: "https://i.postimg.cc/bvQLgZts/foto_0077.jpg", alt: "Фото з подружками 20" },
+                    { src: "https://i.postimg.cc/XvwxLrCq/foto_0076.jpg", alt: "Фото з подружками 21" },
+                    { src: "https://i.postimg.cc/6Qdzc8vp/foto_0075.jpg", alt: "Фото з подружками 22" },
+                    { src: "https://i.postimg.cc/254TG1BP/foto_0074.jpg", alt: "Фото з подружками 23" },
+                    { src: "https://i.postimg.cc/yNqv0mkH/foto_0073.jpg", alt: "Фото з подружками 24" },
+                    { src: "https://i.postimg.cc/yNqv0mkC/foto_0072.jpg", alt: "Фото з подружками 25" },
+                    { src: "https://i.postimg.cc/Dzq56SbN/foto_0071.jpg", alt: "Фото з подружками 26" },
+                ]
+            },
+            {
+                name: "Пацани",
+                id: "eagles",
+                coverImage: "https://i.postimg.cc/qqxpSmXs/foto-0058.jpg",
+                hoverImage: "https://i.postimg.cc/KYnkmybM/foto-0155.jpg", 
+                bodyBgImage: "https://picsum.photos/id/237/1200/800",
+                photos: [
+                    { src: "https://i.postimg.cc/bw06P6zL/foto_0056.jpg", alt: "Фото групи Орли 1" },
+                    { src: "https://i.postimg.cc/DwQChC2p/foto_0057.jpg", alt: "Фото групи Орли 2" },
+                    { src: "https://i.postimg.cc/4xv8G8J6/foto_0058.jpg", alt: "Фото групи Орли 3" },
+                    { src: "https://i.postimg.cc/CxCv0vFH/foto_0152.jpg", alt: "Фото групи Орли 4" },
+                    { src: "https://i.postimg.cc/T3jkxkR3/foto_0153.jpg", alt: "Фото групи Орли 5" },
+                    { src: "https://i.postimg.cc/4xv8G8Jm/foto_0154.jpg", alt: "Фото групи Орли 6" },
+                    { src: "https://i.postimg.cc/SxLZ4Zys/foto_0155.jpg", alt: "Фото групи Орли 7" },
+                    { src: "https://i.postimg.cc/525PJPxH/foto_0156.jpg", alt: "Фото групи Орли 8" },
+                ]
+            },
+            {
+                name: "Батьки",
+                id: "parents",
+                coverImage: "https://i.postimg.cc/bwqN12fV/foto-0026.jpg",
+                hoverImage: "https://i.postimg.cc/DyJY5CFp/foto_0067.jpg", 
+                bodyBgImage: "https://picsum.photos/id/30/1200/800",
+                photos: [
+                    { src: "https://i.postimg.cc/xd1Ty48m/foto_0023.jpg", alt: "Фото з батьками 1" },
+                    { src: "https://i.postimg.cc/8CzPB0c4/foto_0025.jpg", alt: "Фото з батьками 2" },
+                    { src: "https://i.postimg.cc/mgwg9sLy/foto_0027.jpg", alt: "Фото з батьками 3" },
+                    { src: "https://i.postimg.cc/XY8Y5bjy/foto_0028.jpg", alt: "Фото з батьками 4" },
+                    { src: "https://i.postimg.cc/mgwg9sLP/foto_0029.jpg", alt: "Фото з батьками 5" },
+                    { src: "https://i.postimg.cc/pLZLjHWL/foto_0030.jpg", alt: "Фото з батьками 6" },
+                    { src: "https://i.postimg.cc/MpDpBS6J/foto_0031.jpg", alt: "Фото з батьками 7" },
+                    { src: "https://i.postimg.cc/fRZbkLNN/foto_0032.jpg", alt: "Фото з батьками 8" },
+                    { src: "https://i.postimg.cc/SxqKjspB/foto_0034.jpg", alt: "Фото з батьками 9" },
+                    { src: "https://i.postimg.cc/mgRrhDGV/foto_0036.jpg", alt: "Фото з батьками 10" },
+                    { src: "https://i.postimg.cc/dtG1qCgN/foto_0040.jpg", alt: "Фото з батьками 11" },
+                    { src: "https://i.postimg.cc/NfRMgXZx/foto_0042.jpg", alt: "Фото з батьками 12" },
+                    { src: "https://i.postimg.cc/pXKT2j3z/foto_0044.jpg", alt: "Фото з батьками 13" },
+                    { src: "https://i.postimg.cc/4NpdJcjz/foto_0045.jpg", alt: "Фото з батьками 14" },
+                    { src: "https://i.postimg.cc/4NpdJcjK/foto_0046.jpg", alt: "Фото з батьками 15" },
+                    { src: "https://i.postimg.cc/44DykP2c/foto_0049.jpg", alt: "Фото з батьками 16" },
+                    { src: "https://i.postimg.cc/Kc6jSfp1/foto_0050.jpg", alt: "Фото з батьками 17" },
+                    { src: "https://i.postimg.cc/9X605bgq/foto_0051.jpg", alt: "Фото з батьками 18" },
+                    { src: "https://i.postimg.cc/BZrb9p7f/foto_0052.jpg", alt: "Фото з батьками 19" },
+                    { src: "https://i.postimg.cc/zDsvZ7tM/foto_0053.jpg", alt: "Фото з батьками 20" },
+                    { src: "https://i.postimg.cc/DfJ0MHgY/foto_0055.jpg", alt: "Фото з батьками 21" },
+                    { src: "https://i.postimg.cc/8kJc09Hy/foto_0064.jpg", alt: "Фото з батьками 22" },
+                    { src: "https://i.postimg.cc/05MjBFff/foto_0066.jpg", alt: "Фото з батьками 23" },
+                    { src: "https://i.postimg.cc/HjDfZV2c/foto_0067.jpg", alt: "Фото з батьками 24" },
+                    { src: "https://i.postimg.cc/F152W7ZY/foto_0113.jpg", alt: "Фото з батьками 25" },
+                    { src: "https://i.postimg.cc/6TJDjy0t/foto_0114.jpg", alt: "Фото з батьками 26" },
+                    { src: "https://i.postimg.cc/6TJDjy0t/foto_0114.jpg", alt: "Фото з батьками 27" },
+                    { src: "https://i.postimg.cc/8sQqKjHQ/foto_0116.jpg", alt: "Фото з батьками 28" },
+                    { src: "https://i.postimg.cc/T1WzJrnm/foto_0136.jpg", alt: "Фото з батьками 29" },
+                    { src: "https://i.postimg.cc/FzJMVj0b/foto_0137.jpg", alt: "Фото з батьками 30" },
+                ]
+            },
+            {
+                name: "Діти",
+                id: "kids",
+                coverImage: "https://i.postimg.cc/fTcq6Vt5/foto_0105.jpg",
+                hoverImage: "https://i.postimg.cc/hGzLRYZt/foto_0126.jpg", 
+                bodyBgImage: "https://picsum.photos/id/350/1200/800",
+                photos: [
+                    { src: "https://i.postimg.cc/4d8Ncpp4/foto_0176.jpg", alt: "Фото з дітьми 1" },
+                    { src: "https://i.postimg.cc/mDZghm1k/foto_0175.jpg", alt: "Фото з дітьми 2" },
+                    { src: "https://i.postimg.cc/bJ6Nn11D/foto_0174.jpg", alt: "Фото з дітьми 3" },
+                    { src: "https://i.postimg.cc/HxWkj68k/foto_0172.jpg", alt: "Фото з дітьми 4" },
+                    { src: "https://i.postimg.cc/wvxj3wRz/foto_0171.jpg", alt: "Фото з дітьми 5" },
+                    { src: "https://i.postimg.cc/9MXQzLRk/foto_0170.jpg", alt: "Фото з дітьми 6" },
+                    { src: "https://i.postimg.cc/j5qSCMnr/foto_0169.jpg", alt: "Фото з дітьми 7" },
+                    { src: "https://i.postimg.cc/vB8ZD0gX/foto_0151.jpg", alt: "Фото з дітьми 8" },
+                    { src: "https://i.postimg.cc/DZfwmxJg/foto_0150.jpg", alt: "Фото з дітьми 9" },
+                    { src: "https://i.postimg.cc/XvkvVRJz/foto_0148.jpg", alt: "Фото з дітьми 10" },
+                    { src: "https://i.postimg.cc/2575zs6b/foto_0147.jpg", alt: "Фото з дітьми 11" },
+                    { src: "https://i.postimg.cc/SKfKyBsg/foto_0146.jpg", alt: "Фото з дітьми 12" },
+                    { src: "https://i.postimg.cc/hG1GSkjQ/foto_0145.jpg", alt: "Фото з дітьми 13" },
+                    { src: "https://i.postimg.cc/6QfQ9k3q/foto_0144.jpg", alt: "Фото з дітьми 14" },
+                    { src: "https://i.postimg.cc/xd2CVf01/foto_0142.jpg", alt: "Фото з дітьми 15" },
+                    { src: "https://i.postimg.cc/3wTRQ8K0/foto_0141.jpg", alt: "Фото з дітьми 16" },
+                    { src: "https://i.postimg.cc/jjb5Yxsr/foto_0127.jpg", alt: "Фото з дітьми 17" },
+                    { src: "https://i.postimg.cc/3xpRq4Qf/foto_0126.jpg", alt: "Фото з дітьми 18" },
+                    { src: "https://i.postimg.cc/JzJnFDW8/foto_0125.jpg", alt: "Фото з дітьми 19" },
+                    { src: "https://i.postimg.cc/yNHdC1V4/foto_0124.jpg", alt: "Фото з дітьми 20" },
+                    { src: "https://i.postimg.cc/NjTMn9wq/foto_0123.jpg", alt: "Фото з дітьми 21" },
+                    { src: "https://i.postimg.cc/cLYHzgGp/foto_0122.jpg", alt: "Фото з дітьми 22" },
+                    { src: "https://i.postimg.cc/9QTMkRHP/foto_0119.jpg", alt: "Фото з дітьми 23" },
+                    { src: "https://i.postimg.cc/sDbxKPqc/foto_0105.jpg", alt: "Фото з дітьми 24" },
+                    { src: "https://i.postimg.cc/Pr0JKb98/foto_0104.jpg", alt: "Фото з дітьми 25" },
+                    { src: "https://i.postimg.cc/3JzN9jVN/foto_0103.jpg", alt: "Фото з дітьми 26" },
+                    { src: "https://i.postimg.cc/J4stbY6D/foto_0102.jpg", alt: "Фото з дітьми 27" },
+                ]
+            },
+            {
+                name: "Друзі",
+                id: "all_friends",
+                coverImage: "https://i.postimg.cc/mg69B4Fp/foto_0165.jpg",
+                hoverImage: "https://i.postimg.cc/MHDc4JS4/foto_0168.jpg", 
+                bodyBgImage: "https://picsum.photos/id/502/1200/800", 
+                photos: [
+                    { src: "https://i.postimg.cc/KzNhVTf8/foto_0157.jpg", alt: "Фото з друзями 1" },
+                    { src: "https://i.postimg.cc/rmJ2b4jq/foto_0158.jpg", alt: "Фото з друзями 2" },
+                    { src: "https://i.postimg.cc/hjrRwmsg/foto_0159.jpg", alt: "Фото з друзями 3" },
+                    { src: "https://i.postimg.cc/B6gfyFp9/foto_0160.jpg", alt: "Фото з друзями 4" },
+                    { src: "https://i.postimg.cc/qRLHYKLZ/foto_0161.jpg", alt: "Фото з друзями 5" },
+                    { src: "https://i.postimg.cc/qR0djwsf/foto_0162.jpg", alt: "Фото з друзями 6" },
+                    { src: "https://i.postimg.cc/ZRZhVHrM/foto_0163.jpg", alt: "Фото з друзями 7" },
+                    { src: "https://i.postimg.cc/tTyH2khm/foto_0164.jpg", alt: "Фото з друзями 8" },
+                    { src: "https://i.postimg.cc/3R7Hn1gP/foto_0165.jpg", alt: "Фото з друзями 9" },
+                    { src: "https://i.postimg.cc/4dZTBPzD/foto_0168.jpg", alt: "Фото з друзями 10" },
+                ]
+            },
+            {
+                name: "Спільні фото",
+                id: "common_photos",
+                coverImage: "https://i.postimg.cc/x1R2zjP5/foto_0173.jpg",
+                hoverImage: "https://i.postimg.cc/fb9fPyrQ/foto_0012.jpg", 
+                bodyBgImage: "https://picsum.photos/id/402/1200/800", 
+                photos: [
+                    { src: "https://i.postimg.cc/Bnb9JvCH/foto_0013.jpg", alt: "Спільне фото 1" },
+                    { src: "https://i.postimg.cc/kXfPrSWW/foto_0015.jpg", alt: "Спільне фото 2" },
+                    { src: "https://i.postimg.cc/fRynMbvS/foto_0016.jpg", alt: "Спільне фото 3" },
+                    { src: "https://i.postimg.cc/BQMfWF21/foto_0017.jpg", alt: "Спільне фото 4" },
+                    { src: "https://i.postimg.cc/Qx0ZL7c7/foto_0018.jpg", alt: "Спільне фото 5" },
+                    { src: "https://i.postimg.cc/Ghqn0DvH/foto_0019.jpg", alt: "Спільне фото 6" },
+                    { src: "https://i.postimg.cc/282NpWnj/foto_0020.jpg", alt: "Спільне фото 7" },
+                    { src: "https://i.postimg.cc/Ghqn0Dvh/foto_0021.jpg", alt: "Спільне фото 8" },
+                    { src: "https://i.postimg.cc/5NnWcz80/foto_0022.jpg", alt: "Спільне фото 9" },
+                    { src: "https://i.postimg.cc/ZKVzkN6T/foto_0068.jpg", alt: "Спільне фото 10" },
+                    { src: "https://i.postimg.cc/ncHfw29t/foto_0070.jpg", alt: "Спільне фото 11" },
+                    { src: "https://i.postimg.cc/fTwQgCSN/foto_0132.jpg", alt: "Спільне фото 12" },
+                    { src: "https://i.postimg.cc/m2bW6jzv/foto_0133.jpg", alt: "Спільне фото 13" },
+                    { src: "https://i.postimg.cc/8P1gn4fg/foto_0173.jpg", alt: "Спільне фото 14" },
+                    { src: "https://i.postimg.cc/XYqSnvg9/foto_0010.jpg", alt: "Спільне фото 15" },
+                ]
+            },
+            {
+                name: "Кільця",
+                id: "rings",
+                coverImage: "https://i.postimg.cc/W34P4MrG/foto_0232.jpg",
+                hoverImage: "https://i.postimg.cc/YSp5X1dQ/foto_0229.jpg", 
+                bodyBgImage: "https://picsum.photos/id/150/1200/800",
+                photos: [
+                    { src: "https://i.postimg.cc/zfPT4xGx/foto_0228.jpg", alt: "1" },
+                    { src: "https://i.postimg.cc/wvyDzD12/foto_0229.jpg", alt: "2" },
+                    { src: "https://i.postimg.cc/3R42h2kb/foto_0230.jpg", alt: "3" },
+                    { src: "https://i.postimg.cc/W3F0V0dy/foto_0231.jpg", alt: "4" },
+                    { src: "https://i.postimg.cc/Qt9cDcFR/foto_0232.jpg", alt: "5" },
+                    { src: "https://i.postimg.cc/KYstC08q/foto_0227.jpg", alt: "6" },
+                    { src: "https://i.postimg.cc/0NH7hVyc/foto_0226.jpg", alt: "7" },
+                    { src: "https://i.postimg.cc/s205bTgx/foto_0218.jpg", alt: "8" },
+                    { src: "https://i.postimg.cc/VNNj7xm5/foto_0219.jpg", alt: "9" },
+                    { src: "https://i.postimg.cc/ZqD6Xw5P/foto_0225.jpg", alt: "10" },
+                    { src: "https://i.postimg.cc/jjjz8ptJ/foto_0210.jpg", alt: "11" },
+                    { src: "https://i.postimg.cc/Bvvxhr4H/foto_0211.jpg", alt: "12" },
+                    { src: "https://i.postimg.cc/R00cPk4H/foto_0212.jpg", alt: "13" },
+                ]
+            },
+            {
+                name: "Традиції і танці",
+                id: "traditions",
+                coverImage: "https://i.postimg.cc/9XY2cKyn/photo_2025_11_09_09_44_19.jpg", 
+                bodyBgImage: "https://picsum.photos/id/160/1200/800",
+                photos: [
+                    { src: "https://i.postimg.cc/9XY2cKyn/photo_2025_11_09_09_44_19.jpg", alt: "1" },
+                    
+                    // === ВАШІ ВІДЕО З YOUTUBE ===
+                    // Як знайти ID: у посиланні https://www.youtube.com/watch?v=dQw4w9WgXcQ -> ID це dQw4w9WgXcQ
+                    { 
+                        type: 'youtube', 
+                        youtubeId: "hN9noQ7L9K8", // Вставте сюди ID вашого першого відео
+                        alt: "Відео: Весільний танець" 
+                        // src видалено, код сам підтягне картинку з YouTube. 
+                        // Але якщо хочете свою картинку, додайте рядок: src: "ваша_картинка.jpg",
+                    },
+                    { 
+                        type: 'youtube', 
+                        youtubeId: "qsEZm_MXuts", // Вставте ID другого відео
+                        alt: "Відео: Традиції" 
+                    },
+                    { 
+                        type: 'youtube', 
+                        youtubeId: "5rbbzZp2nt0", // Вставте ID третього відео
+                        alt: "Відео: Веселощі" 
+                    },
+                ]
+            },
+        ];
+
+        // ====================================================================================
+        // ЛОГІКА ПЛАВНОГО ПЕРЕХОДУ ТА STAGGER
+        // ====================================================================================
+        
+        /**
+         * Керує анімацією зникнення та появи контенту.
+         * @param {Function} contentUpdateCallback - Функція, яка оновлює DOM контент.
+         */
+        function animateTransition(contentUpdateCallback) {
+            // 1. Зникнення (Fade out)
+            contentGrid.style.opacity = 0;
+            mainTitle.style.opacity = 0;
+            mainSubtitle.style.opacity = 0;
+
+            // 2. Очікування, потім оновлення контенту
+            setTimeout(() => {
+                contentUpdateCallback(); // Оновлюємо вміст і класи
+
+                // 3. Поява (Fade in)
+                setTimeout(() => { 
+                    contentGrid.style.opacity = 1;
+                    mainTitle.style.opacity = 1;
+                    mainSubtitle.style.opacity = 1;
+                }, 10); 
+
+            }, 400); // Час зникнення/появи головного контенту ЗМЕНШЕНО ДО 400ms
+        }
+
+        /**
+         * Обробник кліку на картку категорії, який запускає анімацію.
+         * @param {string} categoryId - ID обраної категорії.
+         */
+        function handleCategoryClick(categoryId) {
+            animateTransition(() => openCategoryContent(categoryId));
+        }
+
+        /**
+         * Обробник кліку на кнопку "Назад", який запускає анімацію.
+         */
+        function handleBackClick() {
+            animateTransition(renderCategoriesContent);
+            // ПРИХОВУЄМО кнопку
+            backBtn.classList.add('hidden');
+        }
+
+        // ====================================================================================
+        // ЛОГІКА РЕНДЕРИНГУ КОНТЕНТУ
+        // ====================================================================================
+
+        /**
+         * Рендерить сітку категорій.
+         */
+        function renderCategoriesContent() {
+            loadingText.classList.add('hidden');
+            contentGrid.innerHTML = ''; 
+            contentGrid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 content-transition';
+
+            mainTitle.textContent = "Весілля Каляна і Свєти"; 
+            mainSubtitle.textContent = fixedSubtitleText;
+            
+            backBtn.classList.add('hidden');
+            
+            // Тут ми більше не скидаємо фон через JS, він керується CSS
+            // resetBodyBackground(); 
+
+            categories.forEach(category => {
+                // ДОДАНО: Обгортка для 3D ефекту (perspective)
+                const wrapper = document.createElement('div');
+                wrapper.className = 'category-card-wrapper';
+                wrapper.onclick = () => handleCategoryClick(category.id);
+                
+                const originalImage = category.coverImage;
+                const hoverImage = category.hoverImage || originalImage; 
+
+                // ОСНОВНА КАРТКА (на ній застосовується transform)
+                const card = document.createElement('div');
+                card.className = `category-card bg-white shadow-xl cursor-pointer`;
+
+                card.innerHTML = `
+                    <div class="relative w-full aspect-square overflow-hidden rounded-xl">
+                        <!-- Зображення 1: Оригінал --><img 
+                            src="${originalImage}" 
+                            alt="Обкладинка категорії: ${category.name}" 
+                            class="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-350 category-original-image"
+                            onerror="this.src='https://placehold.co/600x600/CCCCCC/666666?text=Обкладинка'"
+                        />
+                        <!-- Зображення 2: Hover --><img 
+                            src="${hoverImage}" 
+                            alt="Наведення категорії: ${category.name}" 
+                            class="absolute top-0 left-0 w-full h-full object-cover opacity-0 transition-opacity duration-350 category-hover-image"
+                            onerror="this.src='https://placehold.co/600x600/AAAAAA/333333?text=Hover+Обкладинка'"
+                        />
+
+                        <!-- Текстовий оверлей. z-10 гарантує, що текст завжди буде над обома зображеннями --><div class="absolute inset-0 bg-black/10 flex items-end p-4 z-10">
+                            <h3 class="text-xl font-bold text-white leading-tight">
+                                ${category.name}
+                            </h3>
+                        </div>
+                    </div>
+                `;
+                
+                wrapper.appendChild(card);
+                contentGrid.appendChild(wrapper);
+
+                // === ОБРОБНИКИ ПОДІЙ НАВЕДЕННЯ З ПЛАВНИМ ПЕРЕХОДОМ (CROSS-FADE) ===
+                const originalImgElement = card.querySelector('.category-original-image');
+                const hoverImgElement = card.querySelector('.category-hover-image');
+
+                wrapper.onmouseover = () => {
+                    if (originalImage !== hoverImage) {
+                        originalImgElement.style.opacity = '0'; 
+                        hoverImgElement.style.opacity = '1';  
+                    }
+                };
+                wrapper.onmouseout = () => {
+                    if (originalImage !== hoverImage) {
+                        originalImgElement.style.opacity = '1'; 
+                        hoverImgElement.style.opacity = '0';  
+                    }
+                };
+                // =========================================================================
+            });
+        }
+
+        /**
+         * Відкриває сітку фотографій для обраної категорії та запускає stagger-анімацію.
+         * @param {string} categoryId - ID обраної категорії.
+         */
+        function openCategoryContent(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) return;
+
+            currentCategoryPhotos = category.photos;
+            contentGrid.innerHTML = '';
+            // Налаштовуємо сітку для фото
+            contentGrid.className = 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 content-transition'; 
+
+            mainTitle.textContent = category.name;
+            mainSubtitle.textContent = fixedSubtitleText;
+            
+            // ВІДОБРАЖАЄМО кнопку "Назад"
+            backBtn.classList.remove('hidden');
+            
+            currentCategoryPhotos.forEach((photo, index) => {
+                const photoElement = document.createElement('div');
+                // Використовуємо Tailwind: opacity-0 та scale-90 - це ПОЧАТКОВИЙ прихований/зменшений стан
+                photoElement.className = `photo-item relative overflow-hidden rounded-xl shadow-md bg-surface-light hover:shadow-xl opacity-0 transform scale-90`;
+                
+                // Перевіряємо, чи це відео (YouTube або звичайне), щоб додати іконку Play
+                const isVideo = photo.type === 'video' || photo.type === 'youtube';
+                
+                // ЛОГІКА ОБКЛАДИНКИ:
+                // 1. Якщо є photo.src - беремо його.
+                // 2. Якщо немає, але це YouTube - генеруємо посилання на прев'ю YouTube.
+                let imgSrc = photo.src;
+                if (!imgSrc && photo.type === 'youtube' && photo.youtubeId) {
+                    imgSrc = `https://img.youtube.com/vi/${photo.youtubeId}/hqdefault.jpg`;
+                }
+                // Запасний варіант
+                if (!imgSrc) imgSrc = 'https://placehold.co/600x600/CCCCCC/666666?text=No+Image';
+
+                const playIconHTML = isVideo 
+                    ? `<div class="play-icon-overlay">
+                         <svg class="w-8 h-8 text-white pl-1" fill="currentColor" viewBox="0 0 24 24">
+                           <path d="M8 5v14l11-7z"/>
+                         </svg>
+                       </div>` 
+                    : '';
+
+                photoElement.innerHTML = `
+                    <div class="w-full aspect-square relative">
+                        <img 
+                            src="${imgSrc}" 
+                            alt="${photo.alt}" 
+                            data-index="${index}"
+                            class="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500"
+                            loading="lazy"
+                            onclick="openModal(${index})"
+                            onerror="this.src='https://placehold.co/600x600/CCCCCC/666666?text=Помилка+фото'"
+                        />
+                        ${playIconHTML}
+                    </div>
+                `;
+                contentGrid.appendChild(photoElement);
+
+                // Запускаємо поетапну анімацію для кожного фото
+                // Затримка 180 мс для плавного stagger-ефекту
+                setTimeout(() => {
+                    // Знімаємо класи початкового стану, дозволяючи CSS transition працювати
+                    photoElement.classList.remove('opacity-0', 'scale-90');
+                }, 10 + index * 180); 
+            });
+        }
+
+        // ====================================================================================
+        // ЛОГІКА МОДАЛЬНОГО ВІКНА (LIGHTBOX)
+        // ====================================================================================
+
+        /**
+         * Відкриває модальне вікно для перегляду окремого фото.
+         * @param {number} index - індекс фотографії у поточному масиві currentCategoryPhotos.
+         */
+        function openModal(index) {
+            if (currentCategoryPhotos.length === 0) return;
+
+            currentImageIndex = index;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            updateModalImage(index);
+
+            document.addEventListener('keydown', handleKeydown);
+        }
+        
+        /**
+         * Переходить до попереднього/наступного фото.
+         * @param {number} direction - -1 для попереднього, 1 для наступного.
+         */
+        function navigatePhoto(direction) {
+            let newIndex = currentImageIndex + direction;
+            if (newIndex >= 0 && newIndex < currentCategoryPhotos.length) {
+                updateModalImage(newIndex);
+            }
+        }
+
+
+        function updateModalImage(index) {
+            const item = currentCategoryPhotos[index];
+            
+            // ОНОВЛЕННЯ: Скидаємо стан всіх плеєрів
+            modalImage.style.display = 'none';
+            modalImage.style.opacity = '0';
+            youtubePlayer.style.display = 'none';
+            youtubePlayer.src = ""; // Зупиняємо YouTube
+
+            // Оновлюємо індекс
+            currentImageIndex = index; 
+            
+            // Кнопки навігації
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === currentCategoryPhotos.length - 1);
+            prevBtn.classList.toggle('opacity-30', index === 0);
+            nextBtn.classList.toggle('opacity-30', index === currentCategoryPhotos.length - 1);
+
+            // ЛОГІКА ДЛЯ YOUTUBE
+            if (item.type === 'youtube') {
+                youtubePlayer.style.display = 'block';
+                // autoplay=1 запускає відео автоматично
+                youtubePlayer.src = `https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&rel=0`;
+                
+                // Для YouTube кнопка завантаження не працює так просто, тому приховуємо або деактивуємо
+                downloadBtn.disabled = true;
+                downloadBtn.classList.add('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                
+            } else {
+                // Це фото (Стандартна логіка)
+                modalImage.style.display = 'block';
+                downloadBtn.disabled = true; // Поки не завантажиться
+
+                setTimeout(() => {
+                    const tempImage = new Image();
+                    
+                    tempImage.onload = () => {
+                        modalImage.src = tempImage.src;
+                        modalImage.alt = item.alt;
+                        modalImage.style.opacity = '1';
+                        
+                        currentPhotoUrl = tempImage.src; 
+                        downloadBtn.disabled = false;
+                        downloadBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                    };
+                    tempImage.onerror = () => {
+                        console.error("Не вдалося завантажити фото: " + item.src);
+                        modalImage.src = 'https://placehold.co/600x600/FF0000/FFFFFF?text=Помилка+завантаження';
+                        modalImage.style.opacity = '1';
+                        currentPhotoUrl = '';
+                    };
+                    tempImage.src = item.src;
+                }, 100);
+            }
+        }
+
+        function closeModal(event) {
+            // Перевіряємо, чи клік був на оверлеї, а не на вмісті модального вікна
+            if (!event || event.currentTarget === modal || event.currentTarget.id === 'photo-modal' || event.currentTarget.classList.contains('backdrop-blur-md')) {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                
+                // Зупиняємо YouTube відео (очищення src)
+                youtubePlayer.src = "";
+                
+                currentImageIndex = -1;
+                document.removeEventListener('keydown', handleKeydown);
+                currentPhotoUrl = ''; 
+            }
+        }
+        
+        // ФУНКЦІЯ: Завантаження фотографії
+        function downloadPhoto() {
+            // Якщо це YouTube, кнопка має бути неактивна, але про всяк випадок:
+            if (!currentPhotoUrl || currentCategoryPhotos[currentImageIndex]?.type === 'youtube') {
+                return;
+            }
+            
+            // 1. Створюємо тимчасовий елемент <a>
+            const link = document.createElement('a');
+            
+            // 2. Встановлюємо URL фото/відео
+            link.href = currentPhotoUrl;
+            
+            // 3. Встановлюємо ім'я файлу
+            const urlParts = currentPhotoUrl.split('/');
+            let fileName = urlParts.pop() || 'media_file'; 
+            
+            // Якщо це відео без розширення в кінці шляху (рідко, але буває), додаємо mp4
+            if (currentCategoryPhotos[currentImageIndex]?.type === 'video' && !fileName.includes('.')) {
+                 fileName += '.mp4';
+            } else if (!fileName.includes('.')) {
+                 fileName += '.jpg';
+            }
+
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function handleKeydown(e) {
+            if (modal.classList.contains('hidden')) return;
+
+            if (e.key === 'ArrowLeft') {
+                navigatePhoto(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigatePhoto(1);
+            } else if (e.key === 'Escape') {
+                closeModal();
+            }
+        }
+
+        // Додаємо обробник для свайпів на мобільних пристроях (в модальному вікні)
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        modalImage.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, false);
+
+        modalImage.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleGesture();
+        }, false);
+
+        function handleGesture() {
+            const threshold = 50; 
+            if (Math.abs(touchendX - touchstartX) > threshold) {
+                if (touchendX < touchstartX) {
+                    navigatePhoto(1); // Свайп вліво -> Наступне фото
+                }
+                if (touchendX > touchstartX) {
+                    navigatePhoto(-1); // Свайп вправо -> Попереднє фото
+                }
+            }
+        }
+
+        // ====================================================================================
+        // ЛОГІКА ПАРАЛАКСУ
+        // ====================================================================================
+
+        /**
+         * Обробник руху миші для створення ефекту паралаксу на фоновому зображенні.
+         * Ця функція активна лише на десктопі завдяки isMobileDevice()
+         * @param {MouseEvent} e - подія руху миші.
+         */
+        function handleParallax(e) {
+            const parallaxIntensity = 0.015; 
+
+            const x = e.clientX - window.innerWidth / 2;
+            const y = e.clientY - window.innerHeight / 2;
+
+            const movementX = -x * parallaxIntensity;
+            const movementY = -y * parallaxIntensity;
+
+            // Зміщення фону
+            document.body.style.backgroundPosition = `calc(50% + ${movementX}px) calc(50% + ${movementY}px)`;
+        }
+        
+
+        // Нова функція для ініціалізації
+        function initializeApp() {
+            renderCategoriesContent(); 
+            // Додаємо Parallax тільки на пристроях, які не є мобільними/тачскрінами
+            if (!isMobileDevice()) {
+                document.addEventListener('mousemove', handleParallax);
+            }
+        }
+
+        // Запускаємо ініціалізацію при завантаженні сторінки
+        window.onload = initializeApp;
+
+    </script>
+</body>
+</html>
